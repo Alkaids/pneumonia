@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "send.mail.to",
+      "type": "java.lang.String",
+      "description": "Description for send.mail.to."
+    },
+    {
+      "name": "send.mail.cron",
+      "type": "java.lang.String",
+      "description": "Description for send.mail.cron."
+    },
+    {
+      "name": "send.mail.from",
+      "type": "java.lang.String",
+      "description": "Description for send.mail.from."
+    }
+  ] }

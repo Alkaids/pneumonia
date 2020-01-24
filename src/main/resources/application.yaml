@@ -1,0 +1,12 @@
+# 这里按照spring mail 的配置就行
+spring:
+  mail:
+    host: smtp.163.com
+    username: xx@163.com
+    password: xxxx
+    default-encoding: UTF-8
+
+send:
+  mail:
+    cron: 0/30 * * * * ? # 发送频率
+    to: xxx@gmail.com,xxxxx@qq.com # 需要发送的邮箱，逗号隔开
