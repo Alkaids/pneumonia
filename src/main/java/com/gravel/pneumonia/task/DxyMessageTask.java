@@ -1,14 +1,13 @@
-package com.gravel.pneumonia.scheduleTask;
+package com.gravel.pneumonia.task;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.gravel.pneumonia.entity.LatestMessage;
+import com.gravel.pneumonia.service.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,16 +15,13 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @ClassName SendMailTask
@@ -37,20 +33,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 @EnableScheduling
 @Slf4j
-public class SendMailTask {
-
-    @Autowired
-    private JavaMailSender mailSender;
-
+public class DxyMessageTask {
 
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Value("${spring.mail.username}")
-    private String from;
-
-    @Value("${send.mail.to}")
-    private String[] sendMailTos;
+    @Autowired
+    private MailService mailService;
 
     /**
      * 抓取页面地址
@@ -61,8 +50,6 @@ public class SendMailTask {
      */
     private Long latestTime = null;
 
-    private AtomicInteger modCount = new AtomicInteger(0);
-
     /**
      * 日期格式化
      */
@@ -70,7 +57,6 @@ public class SendMailTask {
 
     private static final ZoneId ZONE_ID = ZoneId.systemDefault();
 
-    private static final ZoneOffset ZONE_OFFSET = ZoneOffset.of("+8");
 
     /**
      * 定时发送 HTML 文本邮件
@@ -79,24 +65,11 @@ public class SendMailTask {
      */
     @Scheduled(cron = "${send.mail.cron}")
     public void sendMail() throws MessagingException, IOException {
-        // 开始时间
-        long startMilliSecond = LocalDateTime.now().toInstant(ZONE_OFFSET).toEpochMilli();
-        JSONObject htmlData = crawAllPenumouiaMessage();
-        if (!htmlData.getBoolean("hadNewPost")) {
+        LatestMessage htmlData = crawAllPenumouiaMessage();
+        if (!htmlData.isHadNewPost()) {
             return;
         }
-        MimeMessage message = mailSender.createMimeMessage();
-
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(sendMailTos);
-        helper.setSubject(htmlData.getString("topic"));
-        helper.setText(htmlData.getString("html"), true);
-        helper.setFrom(from);
-        log.info("开始发送--->第「{}」次发送。。。", modCount.incrementAndGet());
-        log.info("from: {}", from);
-        log.info("to: {}", sendMailTos);
-        mailSender.send(message);
-        log.info("发送成功,本次耗时：{} 毫秒！",LocalDateTime.now().toInstant(ZONE_OFFSET).toEpochMilli() - startMilliSecond);
+        mailService.sendMail(htmlData.getTopic(), htmlData.getHtml());
     }
 
     /**
@@ -105,9 +78,9 @@ public class SendMailTask {
      * @return
      */
 
-    public JSONObject crawAllPenumouiaMessage() throws IOException {
+    public LatestMessage crawAllPenumouiaMessage() throws IOException {
         // 返回的数据
-        JSONObject res = new JSONObject();
+        LatestMessage res = new LatestMessage();
         log.info("开始抓取丁香园数据：{}", CRAW_URL);
         Document doc = Jsoup.connect(CRAW_URL).get();
         // 由于页面比较特殊，我直接解析页面JS 中的数据
@@ -150,7 +123,7 @@ public class SendMailTask {
         Long pubDate = timelineDataJSON.getLong("pubDate");
         // 判断 是否需要重新发送
         if (this.latestTime != null && this.latestTime.equals(pubDate)) {
-            res.put("hadNewPost", false);
+            res.setHadNewPost(false);
             return res;
         }
         this.latestTime = pubDate;
@@ -175,9 +148,9 @@ public class SendMailTask {
         context.setVariable("source", timelineDataJSON.getString("infoSource"));
         context.setVariable("href", timelineDataJSON.getString("sourceUrl"));
 
-        res.put("hadNewPost", true);
-        res.put("html", templateEngine.process("latestMessage", context));
-        res.put("topic", topic);
+        res.setHadNewPost(true);
+        res.setHtml(templateEngine.process("latestMessage", context));
+        res.setTopic(topic);
         return res;
     }
 

@@ -48,8 +48,6 @@
 			<version>1.2.62</version>
 		</dependency>
 
-
-
 		<!--email start -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -63,6 +61,10 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 		<!-- freemarker 模版 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

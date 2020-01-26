@@ -1,6 +1,8 @@
 package com.gravel.pneumonia;
 
-import com.gravel.pneumonia.scheduleTask.SendMailTask;
+import com.gravel.pneumonia.task.DxyMessageTask;
+import com.gravel.pneumonia.task.TgMessageTask;
+import com.sun.syndication.io.FeedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,15 +14,22 @@ import java.io.IOException;
 class PneumoniaApplicationTests {
 
 	@Autowired
-	SendMailTask sendMailTask;
+	DxyMessageTask dxyMessageTask;
 
+	@Autowired
+	TgMessageTask tgMessageTask;
 	@Test
 	void testSendMailTask() throws IOException {
-		sendMailTask.crawAllPenumouiaMessage();
+		dxyMessageTask.crawAllPenumouiaMessage();
 	}
 	@Test
 	void testSendMail() throws IOException, MessagingException {
-		sendMailTask.sendMail();
+		dxyMessageTask.sendMail();
+	}
+
+	@Test
+	void testRssSendMail() throws IOException, FeedException {
+		tgMessageTask.scheduledRssTask();
 	}
 
 }

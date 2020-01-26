@@ -1,12 +1,15 @@
 ## pneumonia
-抓取 [丁香园](https://3g.dxy.cn/newh5/view/pneumonia_peopleapp) 实时疫情数据，并发送邮件提醒。
+抓取 [丁香园](https://3g.dxy.cn/newh5/view/pneumonia_peopleapp) 以及[nCoV2019](https://t.me/s/nCoV2019) 的实时疫情数据，并发送邮件提醒。
 
 ## 思路
+
+### 丁香园
 由于丁香园的这个页面，将所有的数据通过服务端渲染，直接写在了具体的 script 标签里面，所以直接从 js 文件解析实时数据， 不需要去遍历查找每个 html 的 tag. 执行效率要一点。
+### telegram nCoV2019
+抓取这个频道的数据需要科学上网。
 
-然后将需要的数据写入模板文件，转换成字符，使用 spring mail 发送邮件。
-
-由于功能比较简单，没有进行分包。
+### 其他
+以上两个数据源都封装成HTML文本，然后写入模板文件，转换成字符，使用 spring mail 发送邮件。
 
 ## quickstart
 按规则修改配置文件
