@@ -23,13 +23,13 @@ class PneumoniaApplicationTests {
 		dxyMessageTask.crawAllPenumouiaMessage();
 	}
 	@Test
-	void testSendMail() throws IOException, MessagingException {
+	void testSendMail() throws IOException {
 		dxyMessageTask.sendMail();
 	}
 
 	@Test
-	void testRssSendMail() throws IOException, FeedException {
-		tgMessageTask.scheduledRssTask();
+	void testRssSendMail() throws IOException {
+		tgMessageTask.scheduledTgTask();
 	}
 
 }

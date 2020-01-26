@@ -17,12 +17,12 @@ public interface MailService {
      * @param topic
      * @param content
      */
-    public void sendMail(String from,String[] to,String topic,String content);
+    void sendMail(String from, String[] to, String topic, String content);
 
     /**
      * 使用系统默认配置发送
      * @param topic
      * @param content
      */
-    public void sendMail(String topic,String content);
+    void sendMail(String topic, String content);
 }

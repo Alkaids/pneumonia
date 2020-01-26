@@ -56,7 +56,7 @@ public class MethodExeTimeAop {
     }
 
     /**
-     * 打印方法执行耗时的信息，如果超过了一定的时间，才打印
+     * 打印方法执行耗时的信息
      *
      * @param methodName
      * @param startTime

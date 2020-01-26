@@ -27,12 +27,4 @@ public class LatestMessage {
      */
     private String html;
 
-    /**
-     * 清空对象
-     */
-    public void clear(){
-        this.hadNewPost = false;
-        this.topic = null;
-        this.html = null;
-    }
 }

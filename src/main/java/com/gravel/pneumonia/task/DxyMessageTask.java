@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.mail.MessagingException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,7 +47,7 @@ public class DxyMessageTask {
     /**
      * 最新数据时间
      */
-    private Long latestTime = null;
+    private String latestTopic = null;
 
     /**
      * 日期格式化
@@ -61,10 +60,10 @@ public class DxyMessageTask {
     /**
      * 定时发送 HTML 文本邮件
      *
-     * @throws javax.mail.MessagingException
+     * @throws IOException
      */
     @Scheduled(cron = "${send.mail.cron}")
-    public void sendMail() throws MessagingException, IOException {
+    public void sendMail() throws IOException {
         LatestMessage htmlData = crawAllPenumouiaMessage();
         if (!htmlData.isHadNewPost()) {
             return;
@@ -76,8 +75,8 @@ public class DxyMessageTask {
      * 从丁香园抓取疫情数据
      *
      * @return
+     * @throws IOException
      */
-
     public LatestMessage crawAllPenumouiaMessage() throws IOException {
         // 返回的数据
         LatestMessage res = new LatestMessage();
@@ -86,7 +85,6 @@ public class DxyMessageTask {
         // 由于页面比较特殊，我直接解析页面JS 中的数据
         String statisticsData = doc.getElementById("getStatisticsService").html();
         String timelineData = doc.getElementById("getTimelineService").html();
-
         /**
          * 头部数据
          * {
@@ -120,13 +118,16 @@ public class DxyMessageTask {
         JSONObject timelineDataJSON = JSON.parseArray(subStr(timelineData, "= [")).getJSONObject(0);
         log.info("最新数据抓取成功 ：{}", timelineDataJSON.toJSONString());
 
-        Long pubDate = timelineDataJSON.getLong("pubDate");
+        // 邮件标题
+        String topic = timelineDataJSON.getString("title");
+
         // 判断 是否需要重新发送
-        if (this.latestTime != null && this.latestTime.equals(pubDate)) {
+        if (this.latestTopic != null && this.latestTopic.equals(topic)) {
+            log.info("丁香园 频道没有新的数据！");
             res.setHadNewPost(false);
             return res;
         }
-        this.latestTime = pubDate;
+        this.latestTopic = topic;
 
         // 头部数据拼装
         List<String> statisticsList = new ArrayList<>();
@@ -136,8 +137,7 @@ public class DxyMessageTask {
         statisticsList.add(statisticsJSON.getString("remark1"));
         statisticsList.add(statisticsJSON.getString("remark2"));
 
-        // 邮件标题
-        String topic = timelineDataJSON.getString("title");
+
         Context context = new Context();
         context.setVariable("topic", topic);
         context.setVariable("time", formatDate(timelineDataJSON.getDate("pubDate")));

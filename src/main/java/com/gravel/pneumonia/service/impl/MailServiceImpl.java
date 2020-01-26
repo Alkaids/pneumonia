@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Arrays;
 
 /**
  * @ClassName MailServiceImpl
@@ -49,7 +50,7 @@ public class MailServiceImpl implements MailService {
             helper.setText(content, true);
             helper.setFrom(from);
             log.info("from: {}", from);
-            log.info("to: {}", to);
+            log.info("to: {}", Arrays.toString(to));
             mailSender.send(message);
         } catch (MessagingException e) {
             log.error("发送失败：----> {0}", e);

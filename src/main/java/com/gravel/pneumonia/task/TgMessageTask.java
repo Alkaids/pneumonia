@@ -34,25 +34,23 @@ public class TgMessageTask {
 
     private String latestTopic = null;
 
-    @Value("${spring.mail.username}")
-    private String from;
-
-    @Value("${send.mail.to}")
-    private String[] sendMailTos;
-
     /**
      * 定义HTML标签的正则表达式
      */
     private static final String REG_EX_HTML = "<[^>]+>";
 
+    /**
+     *
+     * @throws IOException
+     */
     @Scheduled(cron = "${send.mail.cron}")
-    public void scheduledRssTask() throws IOException, FeedException {
+    public void scheduledTgTask() throws IOException {
         LatestMessage latestMessage = this.getLatestMessage();
         // 如果没有新的数据
         if (!latestMessage.isHadNewPost()) {
             return;
         }
-        mailService.sendMail(from, sendMailTos, latestMessage.getTopic(), latestMessage.getHtml());
+        mailService.sendMail(latestMessage.getTopic(), latestMessage.getHtml());
     }
 
 
@@ -73,6 +71,7 @@ public class TgMessageTask {
         String topic = getRegTopic(content);
         log.info(topic);
         if (topic.equals(this.latestTopic)) {
+            log.info("tg 频道没有新的数据！");
             latestMessage.setHadNewPost(false);
             return latestMessage;
         }
