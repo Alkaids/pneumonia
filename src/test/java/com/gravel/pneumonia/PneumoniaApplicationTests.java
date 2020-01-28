@@ -2,12 +2,10 @@ package com.gravel.pneumonia;
 
 import com.gravel.pneumonia.task.DxyMessageTask;
 import com.gravel.pneumonia.task.TgMessageTask;
-import com.sun.syndication.io.FeedException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.mail.MessagingException;
 import java.io.IOException;
 
 @SpringBootTest

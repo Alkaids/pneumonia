@@ -2,13 +2,11 @@ package com.gravel.pneumonia.task;
 
 import com.gravel.pneumonia.entity.LatestMessage;
 import com.gravel.pneumonia.service.MailService;
-import com.sun.syndication.io.FeedException;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -40,7 +38,6 @@ public class TgMessageTask {
     private static final String REG_EX_HTML = "<[^>]+>";
 
     /**
-     *
      * @throws IOException
      */
     @Scheduled(cron = "${send.mail.cron}")
@@ -59,7 +56,6 @@ public class TgMessageTask {
      *
      * @return
      * @throws IOException
-     * @throws FeedException
      */
     private LatestMessage getLatestMessage() throws IOException {
         String url = "https://t.me/s/nCoV2019";
