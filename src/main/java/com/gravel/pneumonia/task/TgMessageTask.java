@@ -37,6 +37,8 @@ public class TgMessageTask {
      */
     private static final String REG_EX_HTML = "<[^>]+>";
 
+    private static final String CRAW_URL = "https://t.me/s/nCoV2019";
+
     /**
      * @throws IOException
      */
@@ -58,9 +60,9 @@ public class TgMessageTask {
      * @throws IOException
      */
     private LatestMessage getLatestMessage() throws IOException {
-        String url = "https://t.me/s/nCoV2019";
 
-        Document doc = Jsoup.connect(url).get();
+        Document doc = Jsoup.connect(CRAW_URL).get();
+        log.info("开始抓取 tg 的数据--》{}",CRAW_URL);
         Element latestItem = doc.select("div.tgme_widget_message_wrap").last();
         LatestMessage latestMessage = new LatestMessage();
         String content = latestItem.select("div.tgme_widget_message_text").html();
